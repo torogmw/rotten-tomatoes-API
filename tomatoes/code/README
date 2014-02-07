@@ -1,0 +1,7 @@
+(1) Generating data
+For the first data file, I just manually type the query link to the web browser and with the limit = 50 and change the page from 1 - 6, for each call, I append the data into a single json file and parse them by google refine. 
+For the second data file, I wrote a java program to parse the data in the first text file and call the tomato apis with a 300ms delay per call.
+(2) Testing environment
+I test it on Mac OSX 10.8 with Eclipse IDE, which is convenient to add external jars.
+(3) Running code.
+Import java code into Ecipse,->add three external jars provided for Json parse->link to the "movie_ID_name.txt" for reference->wait for the program to call API and write the result.
