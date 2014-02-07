@@ -1,0 +1,33 @@
+-- import data
+Create table movies(id integer, name text, score integer);
+.mode csv
+.import movie-name-score.csv movies
+Create table cast(movie_id integer, cast_id integer, cast_name text);
+.mode csv
+.import movie-cast.csv cast
+
+-- calculate the average score
+select avg(movies.score) from movies where movies.score>=0;
+select '';
+-- return 5 worst movies from the score>75
+select movies.id,movies.name,movies.score from movies where 
+movies.score>75 
+order by movies.score, movies.name
+limit 5; 
+select '';
+-- find cast appearances
+select cast_id,cast_name,Count(cast_id) as count_movies from cast group by cast_name having count(*)=4 order by cast_name limit 5;
+select '';
+-- getting aggregate movie scores
+Create view joint_table as select M.id as id,M.score as score,C.cast_id as cast_id,C.cast_name as cast_name from movies AS M join cast AS C where M.id = C.movie_id;
+select cast_id, cast_name, avg(score) as average_score from joint_table where score>0 group by cast_id order by average_score desc, cast_name limit 10;
+select "";
+-- creating view for good collaboration
+Create view joint_table_2 as select c1,c2,M.id as id, M.score as score from movies as M join (select cast_id as c1, movie_id as m1 from cast)t1 join (select cast_id as c2, movie_id as m2 from cast)t2 where m1=m2 and c1!=c2 and id = m1 and score >=0; 
+Create view good_collaboration as select c1,c2,avg(score) as avg_movie_score,count(*) as movie_count from joint_table_2 group by c1,c2 having movie_count>=2 and avg_movie_score>=75 order by avg_movie_score desc;
+select * from good_collaboration;
+select "";
+-- find best collaborators
+select c1,CC.cast_name as cast_name, avg(avg_movie_score) as average_good_collab_score from good_collaboration, cast as CC where CC.cast_id = c1 group by c1 order by average_good_collab_score desc limit 15;
+select "";
+
